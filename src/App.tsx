@@ -1,144 +1,238 @@
 import './App.css'
 
-const riskSignals = [
-  { label: 'Prompt injection attempts', value: 34, trend: '+12%', severity: 'high' },
-  { label: 'Tool approval denials', value: 8, trend: '-4%', severity: 'medium' },
-  { label: 'Secrets blocked', value: 17, trend: '+6%', severity: 'high' },
-  { label: 'Unsafe external writes', value: 3, trend: '-18%', severity: 'low' },
+const postureMetrics = [
+  { label: 'Discovered identities', value: '128', detail: 'agents, MCP servers, service accounts' },
+  { label: 'Shadow agents', value: '11', detail: 'unregistered workloads found this week' },
+  { label: 'Long-lived credentials', value: '24', detail: 'tokens older than policy allows' },
+  { label: 'Critical fixes', value: '7', detail: 'high-impact remediations ready' },
 ]
 
-const agents = [
-  { name: 'Luna Main', status: 'Protected', score: 94, scope: 'Telegram + local tools' },
-  { name: 'Research Runner', status: 'Review', score: 82, scope: 'Web + files' },
-  { name: 'Release Bot', status: 'Protected', score: 91, scope: 'GitHub + CI' },
-  { name: 'Inbox Triage', status: 'At risk', score: 68, scope: 'Gmail + Calendar' },
+const lifecycle = [
+  {
+    phase: 'Discover',
+    title: 'Map every agent identity',
+    copy: 'Continuously inventory AI agents, MCP servers, tokens, apps, owners, and business context.',
+    stats: '128 identities',
+  },
+  {
+    phase: 'Secure',
+    title: 'Prioritize risky access paths',
+    copy: 'Detect excessive privileges, vulnerable configuration, abnormal activity, and policy drift.',
+    stats: '7 critical risks',
+  },
+  {
+    phase: 'Deploy',
+    title: 'Provision safe-by-design agents',
+    copy: 'Issue short-lived credentials with just-in-time, precisely scoped access at creation time.',
+    stats: '4 policy templates',
+  },
 ]
 
-const events = [
-  { time: '13:02', title: 'GitHub workflow token verified', detail: 'repo + workflow scopes detected', tone: 'success' },
-  { time: '12:48', title: 'External content sandboxed', detail: 'release notes parsed as untrusted input', tone: 'success' },
-  { time: '12:31', title: 'Destructive command held', detail: 'approval required before filesystem delete', tone: 'warning' },
-  { time: '11:57', title: 'Memory access constrained', detail: 'private recall limited to direct session', tone: 'success' },
+const graphNodes = [
+  { name: 'Inbox Triage', type: 'Agent', risk: 'critical', x: 8, y: 28 },
+  { name: 'Gmail', type: 'App', risk: 'warning', x: 38, y: 12 },
+  { name: 'Calendar', type: 'App', risk: 'safe', x: 66, y: 28 },
+  { name: 'OAuth token', type: 'Credential', risk: 'critical', x: 42, y: 62 },
+  { name: 'User PII', type: 'Data', risk: 'warning', x: 72, y: 70 },
 ]
 
-const controls = ['Least privilege tools', 'Human approval gates', 'Prompt firewall', 'SecretRef scrubbing']
+const findings = [
+  {
+    severity: 'Critical',
+    title: 'Inbox Triage has standing Gmail write scope',
+    impact: 'Can send or delete messages without just-in-time approval.',
+    fix: 'Replace with read-only default + approval-gated send.',
+  },
+  {
+    severity: 'High',
+    title: 'Release Bot token can edit workflows',
+    impact: 'Workflow write access exceeds release automation needs.',
+    fix: 'Split CI read access from deploy-time workflow access.',
+  },
+  {
+    severity: 'Medium',
+    title: 'Research Runner missing owner metadata',
+    impact: 'Unclear accountability for web/file access decisions.',
+    fix: 'Assign owner and environment policy.',
+  },
+]
+
+const inventory = [
+  { name: 'Inbox Triage', owner: 'Ops', env: 'Prod', access: 'Gmail write, Calendar read', age: '92d', score: 61 },
+  { name: 'Release Bot', owner: 'Eng', env: 'Prod', access: 'GitHub repo + workflow', age: '18d', score: 78 },
+  { name: 'Luna Main', owner: 'Jay', env: 'Personal', access: 'Telegram, local tools', age: 'JIT', score: 94 },
+  { name: 'Research Runner', owner: 'Unassigned', env: 'Lab', access: 'Web, files', age: '31d', score: 72 },
+]
+
+const policies = [
+  { label: 'Approval gates', value: 86 },
+  { label: 'Short-lived credentials', value: 64 },
+  { label: 'SecretRef protection', value: 92 },
+  { label: 'Memory boundaries', value: 81 },
+]
+
+const templates = ['Read-only research agent', 'GitHub release agent', 'Inbox triage agent', 'Customer support agent']
+
+function riskClass(score: number) {
+  if (score < 70) return 'critical'
+  if (score < 85) return 'warning'
+  return 'safe'
+}
 
 function App() {
   return (
-    <main className="shell">
-      <aside className="rail" aria-label="Navigation">
-        <div className="brand" aria-label="Agent Shield">
-          <span className="brand-mark">shield</span>
-          <span>Agent Shield</span>
+    <main className="app-shell">
+      <aside className="sidebar" aria-label="Agent Control Plane navigation">
+        <div className="brand">
+          <span className="brand-mark" aria-hidden="true" />
+          <div>
+            <strong>Agent Control</strong>
+            <span>Identity security</span>
+          </div>
         </div>
-        <nav>
-          {['Overview', 'Agents', 'Incidents', 'Policies', 'Audit log'].map((item, index) => (
-            <a className={index === 0 ? 'active' : ''} href="#" key={item}>
-              <span className="nav-dot" />
-              {item}
-            </a>
+
+        <nav className="nav-links">
+          {['Command center', 'Discover', 'Secure', 'Deploy', 'Access graph', 'Audit log'].map((item, index) => (
+            <a className={index === 0 ? 'active' : ''} href="#" key={item}>{item}</a>
           ))}
         </nav>
-        <section className="rail-card">
-          <p className="eyebrow">Policy posture</p>
+
+        <section className="sidebar-card">
+          <p className="eyebrow">Default policy</p>
           <strong>Zero standing write access</strong>
-          <span>External actions require explicit user intent.</span>
+          <span>Agents receive scoped credentials only when the task requires them.</span>
         </section>
       </aside>
 
-      <section className="content">
-        <header className="topbar">
-          <div>
-            <p className="eyebrow">Agent security dashboard</p>
-            <h1>Protect autonomous work before it reaches production.</h1>
+      <section className="workspace">
+        <header className="hero">
+          <div className="hero-copy">
+            <p className="eyebrow">AI agent identity security</p>
+            <h1>Secure every agent identity before it acts.</h1>
+            <p>
+              Discover shadow agents, trace their access paths, remediate excessive privileges, and deploy new agents with short-lived, policy-driven credentials.
+            </p>
+            <div className="hero-actions">
+              <button className="primary-button">Review critical risks</button>
+              <button className="secondary-button">Deploy governed agent</button>
+            </div>
           </div>
-          <button className="filled-button">Run security review</button>
+
+          <article className="posture-card">
+            <p className="eyebrow">Fleet posture</p>
+            <div className="posture-score"><span>88</span><small>/100</small></div>
+            <p>Strong coverage, but production email agents still have standing privileges.</p>
+          </article>
         </header>
 
-        <section className="hero-grid" aria-label="Security summary">
-          <article className="score-card surface-high">
-            <div className="score-ring" aria-label="Security score 91 percent">
-              <span>91</span>
-            </div>
-            <div>
-              <p className="eyebrow">Fleet trust score</p>
-              <h2>Healthy, with one agent needing review</h2>
-              <p className="muted">Continuous monitoring across prompts, tools, memory, secrets, and outbound channels.</p>
-            </div>
-          </article>
-
-          <article className="surface risk-card">
-            <p className="eyebrow">Highest risk</p>
-            <h3>Inbox Triage</h3>
-            <p className="muted">Calendar + email tools need narrower approval boundaries.</p>
-            <div className="risk-meter"><span /></div>
-          </article>
-        </section>
-
-        <section className="stats-grid" aria-label="Risk signals">
-          {riskSignals.map((signal) => (
-            <article className={`stat-card ${signal.severity}`} key={signal.label}>
-              <p>{signal.label}</p>
-              <div>
-                <strong>{signal.value}</strong>
-                <span>{signal.trend}</span>
-              </div>
+        <section className="metric-grid" aria-label="Posture metrics">
+          {postureMetrics.map((metric) => (
+            <article className="metric-card" key={metric.label}>
+              <span>{metric.label}</span>
+              <strong>{metric.value}</strong>
+              <p>{metric.detail}</p>
             </article>
           ))}
         </section>
 
-        <section className="main-grid">
-          <article className="surface panel">
+        <section className="lifecycle-grid" aria-label="Discover secure deploy lifecycle">
+          {lifecycle.map((item) => (
+            <article className="lifecycle-card" key={item.phase}>
+              <div className="phase-badge">{item.phase}</div>
+              <h2>{item.title}</h2>
+              <p>{item.copy}</p>
+              <strong>{item.stats}</strong>
+            </article>
+          ))}
+        </section>
+
+        <section className="dashboard-grid">
+          <article className="panel access-graph-panel">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">Agent inventory</p>
-                <h2>Runtime posture</h2>
+                <p className="eyebrow">Agent access graph</p>
+                <h2>Risky path: Inbox Triage → Gmail → OAuth token → User PII</h2>
               </div>
-              <button className="tonal-button">Export</button>
+              <button className="secondary-button compact">Open graph</button>
             </div>
-            <div className="agent-list">
-              {agents.map((agent) => (
-                <div className="agent-row" key={agent.name}>
-                  <div>
-                    <strong>{agent.name}</strong>
-                    <span>{agent.scope}</span>
-                  </div>
-                  <span className={`status ${agent.status.toLowerCase().replace(' ', '-')}`}>{agent.status}</span>
-                  <meter min="0" max="100" value={agent.score}>{agent.score}</meter>
-                  <b>{agent.score}</b>
+            <div className="access-graph" aria-label="Agent access graph visualization">
+              <svg viewBox="0 0 100 80" role="img" aria-label="Connected agent identity graph">
+                <path d="M16 34 C28 20, 31 18, 42 20" />
+                <path d="M48 22 C58 24, 60 28, 66 34" />
+                <path d="M44 28 C42 42, 41 50, 45 61" />
+                <path d="M52 64 C61 66, 65 69, 72 73" />
+              </svg>
+              {graphNodes.map((node) => (
+                <div className={`graph-node ${node.risk}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} key={node.name}>
+                  <strong>{node.name}</strong>
+                  <span>{node.type}</span>
                 </div>
               ))}
             </div>
           </article>
 
-          <article className="surface panel">
+          <article className="panel findings-panel">
             <div className="panel-heading">
               <div>
-                <p className="eyebrow">Live audit stream</p>
-                <h2>Recent safeguards</h2>
+                <p className="eyebrow">Critical risk queue</p>
+                <h2>Fix what matters first</h2>
               </div>
             </div>
-            <ol className="timeline">
-              {events.map((event) => (
-                <li className={event.tone} key={`${event.time}-${event.title}`}>
-                  <time>{event.time}</time>
-                  <div>
-                    <strong>{event.title}</strong>
-                    <span>{event.detail}</span>
-                  </div>
-                </li>
+            <div className="finding-list">
+              {findings.map((finding) => (
+                <article className={`finding ${finding.severity.toLowerCase()}`} key={finding.title}>
+                  <span>{finding.severity}</span>
+                  <h3>{finding.title}</h3>
+                  <p>{finding.impact}</p>
+                  <button>{finding.fix}</button>
+                </article>
               ))}
-            </ol>
+            </div>
           </article>
         </section>
 
-        <section className="control-strip" aria-label="Active controls">
-          {controls.map((control) => (
-            <article className="control-chip" key={control}>
-              <span className="material-symbol">verified_user</span>
-              <strong>{control}</strong>
-            </article>
-          ))}
+        <section className="lower-grid">
+          <article className="panel inventory-panel">
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Agent inventory</p>
+                <h2>Identities, owners, access, credential age</h2>
+              </div>
+            </div>
+            <div className="inventory-table">
+              <div className="table-header"><span>Agent</span><span>Owner</span><span>Access</span><span>Cred age</span><span>Risk</span></div>
+              {inventory.map((agent) => (
+                <div className="table-row" key={agent.name}>
+                  <strong>{agent.name}<small>{agent.env}</small></strong>
+                  <span>{agent.owner}</span>
+                  <span>{agent.access}</span>
+                  <span>{agent.age}</span>
+                  <b className={riskClass(agent.score)}>{agent.score}</b>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel policy-panel">
+            <p className="eyebrow">Policy coverage</p>
+            <h2>Guardrails applied</h2>
+            {policies.map((policy) => (
+              <div className="policy-row" key={policy.label}>
+                <div><span>{policy.label}</span><strong>{policy.value}%</strong></div>
+                <meter min="0" max="100" value={policy.value}>{policy.value}%</meter>
+              </div>
+            ))}
+          </article>
+        </section>
+
+        <section className="deploy-strip">
+          <div>
+            <p className="eyebrow">Deploy secure-by-design</p>
+            <h2>Start from governed agent templates</h2>
+          </div>
+          <div className="template-list">
+            {templates.map((template) => <button key={template}>{template}</button>)}
+          </div>
         </section>
       </section>
     </main>
