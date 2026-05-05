@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   Badge,
   Body1,
@@ -20,6 +21,7 @@ import {
   TableRow,
   Text,
   Title1,
+  webDarkTheme,
   webLightTheme,
 } from '@fluentui/react-components'
 import {
@@ -80,17 +82,27 @@ function badgeAppearance(risk: string): 'danger' | 'warning' | 'success' {
 }
 
 function App() {
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light')
+  const isDark = themeMode === 'dark'
+
   return (
-    <FluentProvider theme={webLightTheme}>
-      <main className="fluent-shell">
+    <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
+      <main className={`fluent-shell ${isDark ? 'dark' : 'light'}`}>
         <div className="command-bar">
           <div className="brand-lockup"><Sparkle24Filled /><span>AI Security</span></div>
-          <TabList selectedValue="inventory" size="small">
+          <TabList selectedValue="inventory" size="small" className="top-tabs">
             <Tab value="inventory">Inventory</Tab>
             <Tab value="risks">Risks</Tab>
             <Tab value="policies">Policies</Tab>
             <Tab value="deploy">Deploy</Tab>
           </TabList>
+          <Button
+            appearance="subtle"
+            className="theme-toggle"
+            onClick={() => setThemeMode(isDark ? 'light' : 'dark')}
+          >
+            {isDark ? '☀ Light' : '☾ Dark'}
+          </Button>
         </div>
 
         <aside className="left-nav" aria-label="Inventory navigation">

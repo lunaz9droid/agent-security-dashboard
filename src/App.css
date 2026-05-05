@@ -21,15 +21,36 @@ a { color: inherit; }
   grid-column: 1 / -1;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
   padding: 0 18px;
-  border-bottom: 1px solid #e0e0e0;
-  background: #0f6cbd;
-  color: white;
+  border-bottom: 1px solid #084b83;
+  background: #0b4f8a;
+  color: #ffffff;
 }
 
-.command-bar [role='tab'] { color: white; }
-.command-bar [role='tab'][aria-selected='true'] { background: rgb(255 255 255 / 16%); }
+.top-tabs { flex: 1; }
+.command-bar [role='tab'] {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+.command-bar [role='tab']:hover {
+  background: rgb(255 255 255 / 14%);
+}
+.command-bar [role='tab'][aria-selected='true'] {
+  color: #ffffff !important;
+  background: rgb(255 255 255 / 22%);
+}
+.command-bar [role='tab'][aria-selected='true']::after {
+  background-color: #ffffff !important;
+}
+
+.theme-toggle {
+  color: #ffffff !important;
+  border: 1px solid rgb(255 255 255 / 38%) !important;
+  background: rgb(255 255 255 / 12%) !important;
+  white-space: nowrap;
+}
+.theme-toggle:hover { background: rgb(255 255 255 / 20%) !important; }
 
 .brand-lockup {
   display: flex;
@@ -284,3 +305,69 @@ a { color: inherit; }
   .metric-row { grid-template-columns: 1fr; }
   .chart-body { grid-template-columns: 1fr; }
 }
+
+.fluent-shell.dark {
+  background: #1b1a19;
+  color: #f5f5f5;
+}
+
+.fluent-shell.dark .command-bar {
+  border-bottom-color: #0e4775;
+  background: #0a3b66;
+}
+
+.fluent-shell.dark .left-nav,
+.fluent-shell.dark .content-area {
+  background: #1b1a19;
+}
+
+.fluent-shell.dark .left-nav {
+  border-right-color: #3b3a39;
+}
+
+.fluent-shell.dark .workspace-title,
+.fluent-shell.dark .nav-heading,
+.fluent-shell.dark .left-nav a {
+  color: #f5f5f5;
+}
+
+.fluent-shell.dark .left-nav a svg {
+  color: #c8c6c4;
+}
+
+.fluent-shell.dark .left-nav a.active {
+  color: #ffffff;
+  background: #115ea3;
+}
+
+.fluent-shell.dark .left-nav a.active svg {
+  color: #ffffff;
+}
+
+.fluent-shell.dark .page-title-row .fui-Body1,
+.fluent-shell.dark .fluent-donut small,
+.fluent-shell.dark .resource-card .fui-TableHeaderCell {
+  color: #c8c6c4;
+}
+
+.fluent-shell.dark .metric-icon {
+  color: #ffffff;
+  background: #115ea3;
+}
+
+.fluent-shell.dark .technology-row:hover {
+  background: #292827;
+}
+
+.fluent-shell.dark .technology-row > svg {
+  color: #c8c6c4;
+}
+
+.fluent-shell.dark .fluent-donut {
+  background:
+    radial-gradient(circle closest-side, #292827 65%, transparent 67%),
+    conic-gradient(#479ef5 0 91.6%, #115ea3 91.6% 100%);
+}
+
+.fluent-shell.dark .legend-list .blue { background: #479ef5; }
+.fluent-shell.dark .legend-list .light-blue { background: #115ea3; }
