@@ -23,34 +23,58 @@ a { color: inherit; }
   align-items: center;
   gap: 24px;
   padding: 0 18px;
-  border-bottom: 1px solid #084b83;
-  background: #0b4f8a;
+  border-bottom: 1px solid #073763;
+  background: #074b7f;
   color: #ffffff;
 }
 
 .top-tabs { flex: 1; }
-.command-bar [role='tab'] {
+.command-bar .fui-Tab,
+.command-bar .fui-Tab *,
+.command-bar [role='tab'],
+.command-bar [role='tab'] * {
   color: #ffffff !important;
-  font-weight: 600;
+  opacity: 1 !important;
+  font-weight: 700;
+  text-shadow: none !important;
 }
+.command-bar .fui-Tab {
+  border-radius: 6px;
+}
+.command-bar .fui-Tab:hover,
 .command-bar [role='tab']:hover {
-  background: rgb(255 255 255 / 14%);
+  background: #0f6cbd !important;
 }
+.command-bar .fui-Tab[aria-selected='true'],
 .command-bar [role='tab'][aria-selected='true'] {
   color: #ffffff !important;
-  background: rgb(255 255 255 / 22%);
+  background: #185d94 !important;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 72%);
 }
+.command-bar .fui-Tab[aria-selected='true']::after,
 .command-bar [role='tab'][aria-selected='true']::after {
+  height: 3px !important;
   background-color: #ffffff !important;
 }
-
-.theme-toggle {
-  color: #ffffff !important;
-  border: 1px solid rgb(255 255 255 / 38%) !important;
-  background: rgb(255 255 255 / 12%) !important;
-  white-space: nowrap;
+.command-bar .fui-Tab:focus-visible,
+.command-bar [role='tab']:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 3px solid #ffffff !important;
+  outline-offset: 2px;
 }
-.theme-toggle:hover { background: rgb(255 255 255 / 20%) !important; }
+
+.theme-toggle,
+.theme-toggle * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+.theme-toggle {
+  border: 1px solid rgb(255 255 255 / 78%) !important;
+  background: #185d94 !important;
+  white-space: nowrap;
+  font-weight: 700 !important;
+}
+.theme-toggle:hover { background: #0f6cbd !important; }
 
 .brand-lockup {
   display: flex;
@@ -312,8 +336,8 @@ a { color: inherit; }
 }
 
 .fluent-shell.dark .command-bar {
-  border-bottom-color: #0e4775;
-  background: #0a3b66;
+  border-bottom-color: #061f35;
+  background: #062b49;
 }
 
 .fluent-shell.dark .left-nav,
